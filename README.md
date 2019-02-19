@@ -1,2 +1,2 @@
-# Api php SDK
+# PHP SDK for Planet Express API
 

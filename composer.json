@@ -1,0 +1,29 @@
+{
+    "name": "planetexpress/api-php-sdk",
+    "description": "PHP SDK for Planet Express API services.",
+    "homepage": "https://planetexpress.com",
+    "license": [
+        "BSD-3-Clause",
+        "GPL-2.0",
+        "GPL-3.0"
+    ],
+    "authors": [
+        {
+            "name": "Webwings s.r.o",
+            "homepage": "http://www.webwings.cz"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+    "require": {
+        "php": ">= 7.1",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "tracy/tracy": "^2.5"
+    }
+}
