@@ -2,21 +2,29 @@
 
 namespace PlanetExpress\Objects;
 
-use PlanetExpress\Exceptions\InvalidArgumentException;
-use stdClass;
 use ArrayAccess;
 use Countable;
 use IteratorAggregate;
+use PlanetExpress\Exceptions\InvalidArgumentException;
 use PlanetExpress\Exceptions\MemberAccessException;
+use PlanetExpress\Interfaces\IArrayConvertible;
+use stdClass;
 use Traversable;
 
 /**
  * Serves as base for all data containing objects.
  * @package PlanetExpress\Objects
  */
-abstract class BaseObject extends stdClass implements ArrayAccess, Countable, IteratorAggregate
+abstract class BaseObject extends stdClass implements ArrayAccess, Countable, IteratorAggregate, IArrayConvertible
 {
+    /**
+     * Properties that should be of specific subclass
+     */
     protected const SUBCLASSES = [];
+    /**
+     * Properties ignored by toArray() method.
+     */
+    protected const IGNORED_PROPERTIES = [];
 
     /* STATIC ------------------------------------------------------------------------------------------------------- */
 
@@ -135,6 +143,28 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
         }, $value);
     }
 
+    /**
+     * Convert string to snake_case.
+     * @param string $value
+     * @return string
+     */
+    public static function toSnakeCase(string $value): string
+    {
+        static $cache = [];
+
+        if (isset($cache[$value])) {
+            return $cache[$value];
+        }
+
+        return $cache[$value] = preg_replace_callback('/([a-z])?([A-Z0-9])/', function ($matches) {
+            if ($matches[1]) {
+                return strtolower($matches[1] . '_' . $matches[2]);
+            } else {
+                return strtolower($matches[2]);
+            }
+        }, $value);
+    }
+
     /* MAGIC -------------------------------------------------------------------------------------------------------- */
 
     /**
@@ -212,6 +242,10 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
      */
     public function offsetSet($offset, $value)
     {
+        if (!is_numeric($offset) && empty($offset)) {
+            throw new InvalidArgumentException("Key cannot be empty");
+        }
+
         $this->$offset = $value;
     }
 
@@ -258,4 +292,57 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
     {
         return new \ArrayIterator(get_object_vars($this));
     }
+
+    /* ARRAY CONVERTIBLE -------------------------------------------------------------------------------------------- */
+
+    /**
+     * @param bool $recursive
+     * @return array
+     */
+    public function toArray(bool $recursive = true): array
+    {
+        $result = [];
+        $properties = get_object_vars($this);
+        $ignoredProperties = $this->getIgnoredProperties();
+
+        foreach ($properties as $property => $value) {
+            if (!in_array($property, $ignoredProperties)) {
+                if (is_string($property)) {
+                    $property = self::toSnakeCase($property);
+                }
+
+                if ($recursive && $value instanceof IArrayConvertible) {
+                    $result[$property] = $value->toArray();
+                } else {
+                    $result[$property] = $value;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIgnoredProperties(): array
+    {
+        $properties = [];
+
+        try {
+            $rc = new \ReflectionClass(static::class);
+        } catch (\ReflectionException $e) {
+            // Do not want to crash because of this
+            return $properties;
+        }
+
+        do {
+            if (is_array($constant = $rc->getConstant('IGNORED_PROPERTIES'))) {
+                $properties = array_merge($properties, $constant);
+            }
+        } while ($rc = $rc->getParentClass());
+
+        return array_unique($properties);
+    }
+
 }

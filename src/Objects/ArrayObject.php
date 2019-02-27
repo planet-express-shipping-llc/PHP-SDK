@@ -45,5 +45,19 @@ class ArrayObject extends BaseObject
         $this->$name = $value;
     }
 
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     */
+    public function offsetSet($offset, $value)
+    {
+        if ($offset == null) {
+            // [] operator, insert after highest numeric index
+            $indices = array_filter(array_keys(get_object_vars($this)), 'is_numeric');
 
+            $offset = empty($indices) ? 0 : max($indices) + 1;
+        }
+
+        parent::offsetSet($offset, $value);
+    }
 }

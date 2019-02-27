@@ -12,7 +12,7 @@ class DeclarationItem extends BaseObject
      */
     public $name;
     /**
-     * Amount in package
+     * Quantity in package
      * @var int
      */
     public $quantity;
@@ -20,7 +20,7 @@ class DeclarationItem extends BaseObject
      * Declared value
      * @var float
      */
-    public $price;
+    public $value;
     /**
      * Origin country
      * @var string

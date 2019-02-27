@@ -20,34 +20,40 @@ class CurlClient implements IClient
      */
     public function request(string $method, string $url, array $headers = [], array $params = []): ClientResponse
     {
-        $responseHeaders = [];
+
+        $method = strtoupper(trim($method));
+
+        // Options
         $options = [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLINFO_HEADER_OUT => true,
         ];
 
-        switch (strtolower(trim($method))) {
-            case 'post':
+        // Method & body
+        if ($method == 'GET') {
+            $options[CURLOPT_HTTPGET] = 1;
+            if ($params) {
+                $params = http_build_query($params);
+                $url = "{$url}?{$params}";
+            }
+        } else {
+            $headers[] = 'Content-Type: application/json';
+            $options[CURLOPT_POSTFIELDS] = json_encode($params);
+
+            if ($method == 'POST') {
                 $options[CURLOPT_POST] = 1;
-                $options[CURLOPT_POSTFIELDS] = $params;
-                break;
-
-            case 'get':
-                $options[CURLOPT_HTTPGET] = 1;
-                if ($params) {
-                    $params = http_build_query($params);
-                    $url = "{$url}?{$params}";
-                }
-                break;
-
-            default:
-                $options[CURLOPT_CUSTOMREQUEST] = strtoupper(trim($method));
+            } else {
+                $options[CURLOPT_CUSTOMREQUEST] = $method;
+            }
         }
 
+        // Headers
+        $options[CURLOPT_HTTPHEADER] = $headers;
+
+        $responseHeaders = [];
         $curl = curl_init($url);
         curl_setopt_array($curl, $options);
 
+        // Response headers
         curl_setopt($curl, CURLOPT_HEADERFUNCTION, function ($curl, $header) use (&$responseHeaders) {
             $len = strlen($header);
             $header = explode(':', $header, 2);

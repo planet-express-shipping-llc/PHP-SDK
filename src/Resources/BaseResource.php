@@ -20,6 +20,13 @@ use PlanetExpress\Objects\Resource\Meta;
  */
 abstract class BaseResource extends BaseObject
 {
+    const IGNORED_PROPERTIES = [
+        'id',
+        'messages',
+        'meta',
+        'links',
+    ];
+
     /**
      * Resource ID
      * @var int|null

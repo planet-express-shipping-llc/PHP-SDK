@@ -4,8 +4,8 @@ namespace PlanetExpress\Resources;
 
 use PlanetExpress\Exceptions\ApiException;
 use PlanetExpress\Exceptions\ConnectionException;
-use PlanetExpress\Interfaces\IReadableCollection;
 use PlanetExpress\Interfaces\IReadable;
+use PlanetExpress\Interfaces\IReadableCollection;
 use PlanetExpress\Objects\Item\Declaration;
 use PlanetExpress\Objects\Item\StorageContainer;
 
@@ -35,7 +35,7 @@ class Item extends BaseResource implements IReadable, IReadableCollection
      * Item value
      * @var float
      */
-    public $price;
+    public $value;
     /**
      * Is item a package containing other items?
      * @var bool

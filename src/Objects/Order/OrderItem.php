@@ -11,16 +11,33 @@ class OrderItem extends BaseObject
         'links' => Link::class,
     ];
 
+    protected const IGNORED_PROPERTIES = [
+        'links'
+    ];
+
+    /**
+     * OrderItem constructor.
+     * @param int|null $itemId
+     * @param int|null $quantity
+     * @param string|null $note
+     */
+    public function __construct(int $itemId = null, int $quantity = null, string $note = null)
+    {
+        $this->itemId = $itemId;
+        $this->quantity = $quantity;
+        $this->note = $note;
+    }
+
     /**
      * Storage item ID
      * @var int
      */
     public $itemId;
     /**
-     * Amount ordered
+     * Quantity ordered
      * @var int
      */
-    public $amount;
+    public $quantity;
     /**
      * Item note
      * @var string|null

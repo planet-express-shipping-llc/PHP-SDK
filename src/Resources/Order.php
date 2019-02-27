@@ -4,14 +4,23 @@ namespace PlanetExpress\Resources;
 
 use PlanetExpress\Exceptions\ApiException;
 use PlanetExpress\Exceptions\ConnectionException;
+use PlanetExpress\Interfaces\IDeletable;
+use PlanetExpress\Interfaces\IEditable;
 use PlanetExpress\Interfaces\IReadable;
 use PlanetExpress\Interfaces\IReadableCollection;
 use PlanetExpress\Objects\Order\OrderItem;
 
-class Order extends BaseResource implements IReadable, IReadableCollection
+class Order extends BaseResource implements IReadable, IReadableCollection, IEditable, IDeletable
 {
     protected const SUBCLASSES = [
         'items' => OrderItem::class,
+    ];
+
+    public const IGNORED_PROPERTIES = [
+        'trackingNumber',
+        'trackingUrl',
+        'carrier',
+        'status',
     ];
 
     /**
@@ -133,5 +142,60 @@ class Order extends BaseResource implements IReadable, IReadableCollection
 
     /* PUT ---------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Edit resource by ID with given parameters.
+     *
+     * @param int $id
+     * @param array $params
+     * @return BaseResource
+     * @throws ConnectionException
+     * @throws ApiException
+     */
+    public static function edit(int $id, array $params)
+    {
+        return self::fromResponse(self::request('PUT', 'order', $id, null, null, $params));
+    }
+
+    /**
+     * Edit resource with parameters stored in this object.
+     *
+     * @return BaseResource
+     * @throws ApiException
+     * @throws ConnectionException
+     */
+    public function update()
+    {
+        $this->assertId();
+        $this->refresh(self::request('PUT', 'order', $this->id, null, null, $this->toArray()));
+        return $this;
+    }
+
     /* DELETE ------------------------------------------------------------------------------------------------------- */
+
+    /**
+    /**
+     * Delete a resource by ID.
+     *
+     * @param int $id
+     * @return BaseResource
+     * @throws ApiException
+     * @throws ConnectionException
+     */
+    public static function delete(int $id)
+    {
+        return self::fromResponse(self::request('DELETE', 'order', $id));
+    }
+
+    /**
+     * Deletes resource stored in this object.
+     *
+     * @return BaseResource|null
+     * @throws ApiException
+     * @throws ConnectionException
+     */
+    public function remove()
+    {
+        $this->assertId();
+        return $this->refresh(self::request('DELETE', 'order', $this->id));
+    }
 }
