@@ -96,7 +96,7 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
      * @param mixed $values
      * @return bool
      */
-    public static function isTraversable($values): bool
+    protected static function isTraversable($values): bool
     {
         return is_array($values) || $values instanceof \Traversable;
     }
@@ -105,7 +105,7 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
      * @param mixed $values
      * @return bool
      */
-    public static function isIndexed($values) {
+    protected static function isIndexed($values) {
         if (!self::isTraversable($values)) {
             return false;
         }
@@ -126,7 +126,7 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
      * @param bool $upper UpperCamelCase?
      * @return string
      */
-    public static function toCamelCase(string $value, bool $upper = false): string
+    protected static function toCamelCase(string $value, bool $upper = false): string
     {
         static $cache = [];
 
@@ -148,7 +148,7 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
      * @param string $value
      * @return string
      */
-    public static function toSnakeCase(string $value): string
+    protected static function toSnakeCase(string $value): string
     {
         static $cache = [];
 
