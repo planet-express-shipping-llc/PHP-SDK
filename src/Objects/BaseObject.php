@@ -313,6 +313,8 @@ abstract class BaseObject extends stdClass implements ArrayAccess, Countable, It
 
                 if ($recursive && $value instanceof IArrayConvertible) {
                     $result[$property] = $value->toArray();
+                } elseif ($recursive && is_array($value)) {
+                    $result[$property] = ArrayObject::from($value)->toArray();
                 } else {
                     $result[$property] = $value;
                 }

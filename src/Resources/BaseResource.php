@@ -111,6 +111,10 @@ abstract class BaseResource extends BaseObject
     protected static function handleErrorResponse(ClientResponse $response)
     {
         if (!$response->validResponse) {
+            // For debug only, API does not return HTML
+            if ($response->rawResponse != strip_tags($response->rawResponse)) {
+                echo $response->rawResponse;
+            }
             throw new ConnectionException("Invalid API response", $response->code);
         }
 

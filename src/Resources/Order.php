@@ -4,13 +4,14 @@ namespace PlanetExpress\Resources;
 
 use PlanetExpress\Exceptions\ApiException;
 use PlanetExpress\Exceptions\ConnectionException;
+use PlanetExpress\Interfaces\ICreatable;
 use PlanetExpress\Interfaces\IDeletable;
 use PlanetExpress\Interfaces\IEditable;
 use PlanetExpress\Interfaces\IReadable;
 use PlanetExpress\Interfaces\IReadableCollection;
 use PlanetExpress\Objects\Order\OrderItem;
 
-class Order extends BaseResource implements IReadable, IReadableCollection, IEditable, IDeletable
+class Order extends BaseResource implements IReadable, IReadableCollection, ICreatable, IEditable, IDeletable
 {
     protected const SUBCLASSES = [
         'items' => OrderItem::class,
@@ -73,6 +74,25 @@ class Order extends BaseResource implements IReadable, IReadableCollection, IEdi
      * @var OrderItem[]
      */
     public $items;
+
+    /**
+     * Order constructor.
+     * @param int|null $id
+     * @param int|null $carrierId
+     * @param int|null $addressId
+     * @param bool|null $insurance
+     * @param bool|null $promotionalInserts
+     * @param string|null $note
+     */
+    public function __construct(int $id = null, int $carrierId = null, int $addressId = null, bool $insurance = null, bool $promotionalInserts = null, string $note = null)
+    {
+        parent::__construct($id);
+        $this->carrierId = $carrierId;
+        $this->addressId = $addressId;
+        $this->insurance = $insurance;
+        $this->promotionalInserts = $promotionalInserts;
+        $this->note = $note;
+    }
 
     /* GET ---------------------------------------------------------------------------------------------------------- */
 
@@ -138,6 +158,33 @@ class Order extends BaseResource implements IReadable, IReadableCollection, IEdi
     {
         $this->assertId();
         return $this->refresh(self::request('GET', 'order', $this->id, 'tracking'));
+    }
+
+    /* POST --------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Create resource with given parameters.
+     *
+     * @param array $params
+     * @return BaseResource
+     * @throws ConnectionException
+     * @throws ApiException
+     */
+    public static function create(array $params)
+    {
+        return self::fromResponse(self::request('POST', 'order', null, null, null, $params));
+    }
+
+    /**
+     * Create resource with parameters stored in this object.
+     *
+     * @return BaseResource
+     * @throws ConnectionException
+     * @throws ApiException
+     */
+    public function insert()
+    {
+        return $this->refresh(self::request('POST', 'order', null, null, null, $this->toArray()));
     }
 
     /* PUT ---------------------------------------------------------------------------------------------------------- */
