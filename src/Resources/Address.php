@@ -4,10 +4,11 @@ namespace PlanetExpress\Resources;
 
 use PlanetExpress\Exceptions\ApiException;
 use PlanetExpress\Exceptions\ConnectionException;
-use PlanetExpress\Interfaces\IReadableCollection;
+use PlanetExpress\Interfaces\ICreatable;
 use PlanetExpress\Interfaces\IReadable;
+use PlanetExpress\Interfaces\IReadableCollection;
 
-class Address extends BaseResource implements IReadable, IReadableCollection
+class Address extends BaseResource implements IReadable, IReadableCollection, ICreatable
 {
     /**
      * Address requires either first name + last name or company name
@@ -66,6 +67,39 @@ class Address extends BaseResource implements IReadable, IReadableCollection
     public $taxId;
 
     /**
+     * Address constructor.
+     * @param int|null $id
+     * @param string|null $firstName
+     * @param string|null $lastName
+     * @param string|null $companyName
+     * @param string|null $addressLine1
+     * @param string|null $addressLine2
+     * @param string|null $city
+     * @param string|null $zip
+     * @param string|null $countryIso
+     * @param string|null $stateIso
+     * @param string|null $phone
+     * @param string|null $taxId
+     */
+    public function __construct(?int $id = null, string $firstName = null, string $lastName = null, string $companyName = null, string $addressLine1 = null, string $addressLine2 = null, string $city = null, string $zip = null, string $countryIso = null, string $stateIso = null, string $phone = null, string $taxId = null)
+    {
+        parent::__construct($id);
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->companyName = $companyName;
+        $this->addressLine1 = $addressLine1;
+        $this->addressLine2 = $addressLine2;
+        $this->city = $city;
+        $this->zip = $zip;
+        $this->countryIso = $countryIso;
+        $this->stateIso = $stateIso;
+        $this->phone = $phone;
+        $this->taxId = $taxId;
+    }
+
+    /* GET ---------------------------------------------------------------------------------------------------------- */
+
+    /**
      * Get all available resources with values from API.
      *
      * @return Address[]
@@ -93,7 +127,7 @@ class Address extends BaseResource implements IReadable, IReadableCollection
     /**
      * Fetch values from API into this resource.
      *
-     * @return $this
+     * @return Address
      * @throws ApiException
      * @throws ConnectionException
      */
@@ -101,5 +135,32 @@ class Address extends BaseResource implements IReadable, IReadableCollection
     {
         $this->assertId();
         return $this->refresh(self::request('GET', 'address', $this->id));
+    }
+
+    /* POST --------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Create resource with given parameters.
+     *
+     * @param array $params
+     * @return Address
+     * @throws ConnectionException
+     * @throws ApiException
+     */
+    public static function create(array $params)
+    {
+        return self::fromResponse(self::request('POST', 'address', null, null, null, $params));
+    }
+
+    /**
+     * Create resource with parameters stored in this object.
+     *
+     * @return Address
+     * @throws ConnectionException
+     * @throws ApiException
+     */
+    public function insert()
+    {
+        return self::refresh(self::request('POST', 'address', null, null, null, $this->toArray()));
     }
 }
