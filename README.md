@@ -4,6 +4,18 @@
 
 - Every available resource is represented by a class in namespace `Planetexpress\Resources`.
 
+### Configuration
+
+- Configuration is handled by `PlanetExpress\Configurator`. You have to at least set your **api token**
+to be able to user API services. API token is received from our support.
+
+```php
+// Configuration should naturally be done before you submit any request.
+\PlanetExpress\Configurator::setToken('your API key'); // Set API token
+\PlanetExpress\Configurator::setSandboxMode(true); // Set sandbox mode
+
+```
+
 ### Creating resources
 - Every resource that implements `PlanetExpress\Interfaces\ICreatable` can be created
 
