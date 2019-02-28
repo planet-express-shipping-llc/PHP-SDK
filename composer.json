@@ -1,5 +1,5 @@
 {
-    "name": "planetexpress/api-php-sdk",
+    "name": "planet-express/php-sdk",
     "description": "PHP SDK for Planet Express API services.",
     "homepage": "https://planetexpress.com",
     "license": [
