@@ -6,8 +6,8 @@ use PlanetExpress\Exceptions\InvalidArgumentException;
 
 class Configurator
 {
-    const LIVE_API_BASE = 'https://app.planetexpress.com/api';
-    const SANDBOX_API_BASE = 'https://sandbox.planetexpress.com/api';
+    const LIVE_API_BASE = 'https://app.planetexpress.com/rest';
+    const SANDBOX_API_BASE = 'https://sandbox.planetexpress.com/rest';
 
     /**
      * @var string
